@@ -2,9 +2,10 @@ import { apiAuth } from '@/services/api';
 import { useRouter } from 'next/router';
 import { ReactNode, createContext, useState } from 'react';
 import { toast } from 'react-toastify';
+import { User } from './UserContext';
 
 interface AuthContextDataProps {
-  login: (data: SignInProps) => Promise<void>;
+  login: (data: SignInProps) => Promise<User>;
   logout: () => void;
   email: string;
   requestReset: (email: string) => Promise<void>;
@@ -40,9 +41,29 @@ export function AuthProvider({ children }: AuthContextProviderProps) {
     router.push('/');
   }
 
+  function parseJwt(token: string) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+
+      return JSON.parse(jsonPayload);
+    } catch (error) {
+      console.error('Erro ao decodificar o token JWT:', error);
+      return null;
+    }
+  }
+
   async function login(data: SignInProps) {
     const response = await apiAuth.post('login', data);
     localStorage.setItem('token', response.data.token);
+    const user: User = parseJwt(response.data.token);
+    return user;
   }
 
   async function requestReset(email: string) {

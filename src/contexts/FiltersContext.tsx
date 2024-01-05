@@ -43,7 +43,7 @@ export function FiltersProvider({ children }: FiltersContextProviderProps) {
   const [lojas, setLojas] = useState<Lojas[]>([]);
   const [regionais, setRegionais] = useState<Regionais[]>([]);
   const [vendedores, setVendedores] = useState<Vendedores[]>([]);
-  const [tipo, setTipo] = useState('dia');
+  const [tipo, setTipo] = useState('mes');
   const [regional, setRegional] = useState<string | undefined>(undefined);
   const [loja, setLoja] = useState<string | undefined>(undefined);
   const [salesman, setSalesman] = useState<string | undefined>(undefined);

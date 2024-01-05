@@ -26,7 +26,7 @@ interface SignInProps {
 }
 
 export default function Home() {
-  const { user, loadUser } = useUser();
+  const { loadUser } = useUser();
   const { login } = useAuth();
   const { push } = useRouter();
 
@@ -51,20 +51,14 @@ export default function Home() {
         ...infos,
         modulo: 2
       };
-      await login(data);
+      const user = await login(data);
       await loadUser();
-      if (user) {
-        console.log(user.perfil)
-        switch (user.perfil) {
-          case 'Gerente Matriz':
-            push('/dashboard/matriz');
-          case 'Gerente Loja':
-            push('/dashboard/loja');
-          case 'Gerente Regional':
-            push('/dashboard/regional');
-          default:
-            push('/');
-        }
+      if (user.perfil === 'Gerente Matriz') {
+        push('/dashboard/matriz');
+      } else if (user.perfil === 'Gerente Loja') {
+        push('/dashboard/loja');
+      } else {
+        push('/dashboard/regional');
       }
     } catch (err) {
       toast.error('Falha ao fazer login.');
